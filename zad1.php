@@ -6,7 +6,7 @@
 
 <?php
 $name = "";
-$quantity = $_POST['name'];
+$name = $_POST['name'];
 $quantity =0;
 $quantity =  $_POST['quantity'];
 $total = 0;

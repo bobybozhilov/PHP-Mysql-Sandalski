@@ -6,24 +6,32 @@
 
 <?php
 $name = "";
-$quantity = $_POST['name'];
-$quantity =0;
-$quantity =  $_POST['quantity'];
-$total = 0;
-$total= $_POST['total'];
-$tax = 0;
-$tax = $_POST['tax'];
-$ez = 0;
-$ez=$total/($quantity*(1+0.01*$tax));
-$ez=round($ez,2);
+$name = $_POST['name'];
+
+$price =0;
+$price =  $_POST['price'];
+
+$year = 0;
+$year= $_POST['year'];
+
+$overhaul = 0;
+$overhaul = $_POST['overhaul'];
+
+
+$newPrice=0;
+$newPrice=$price;
+
+if((date("Y")-$year)>=5){
+	$newPrice=$price*(1-0.01*$overhaul);
+}
 ?>
 <div class="panel panel-default">
 <?php
 echo "Name: ".$name."<br>";
-echo "Quantity: ".$quantity.'<br>' ;
-echo "Total: ".$total.'<br>';
-echo "Tax: ".$tax.'<br>';
-echo "Single one: ". $ez;
+echo "price: ".$price.'<br>' ;
+echo "year: ".$year.'<br>';
+echo "overhaul: ".$overhaul.'<br>';
+echo "Single one: ". $newPrice;
 ?>
 </div>
 </body>
