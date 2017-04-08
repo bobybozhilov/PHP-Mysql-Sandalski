@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\includes",
+    "\\includes\\layouts"
   ],
-  "SelectedNode": "\\zad1.php",
   "PreviewInSolutionExplorer": false
 }
