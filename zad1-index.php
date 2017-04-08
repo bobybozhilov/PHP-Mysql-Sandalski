@@ -1,12 +1,9 @@
-<link href="css/bootstrap.css" rel="stylesheet">
-<html>
-<meta charset="utf-8">
-<body>
+<?php include 'includes/layouts/header.php'; ?>
 
     <div class="container">
         <h2 class="text-center">Стока от магазин "Успех" Пловдив</h2>
 
-        <form class="form-horizontal" name="form1" action="zad1.php" method="post">
+        <form class="form-horizontal" name="form1" action="zad1-response.php" method="post">
 
             <div class="form-group">
                 <label class=" control-label col-sm-4" for="name"> Задайте името на стоката:</label>
@@ -37,14 +34,12 @@
             </div>
 
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default" name="submit">Потвърдете</button>
-                    <button type="reset" class="btn btn-default" name="cancel">Отказ</button>
+                <div class="col-sm-offset-4 col-sm-10">
+                    <button type="submit" class="btn btn-success" name="submit">Потвърдете</button>
+                    <button type="reset" class="btn btn-danger" name="cancel">Отказ</button>
                 </div>
             </div>
         </form>
     </div>
-
-</body>
-
-</html>
+	
+<?php include 'includes/layouts/footer.php'; ?>
