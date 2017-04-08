@@ -7,28 +7,28 @@
 
             <div class="form-group">
                 <label class=" control-label col-sm-4" for="name"> Задайте името на стоката:</label>
-                <div class="col-sm-8">
+                <div class="col-sm-6">
                     <input type="text" class="form-control" name="name">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class=" control-label col-sm-4" for="quantity"> Задайте количество на стоката:</label>
-                <div class="col-sm-8">
+                <div class="col-sm-6">
                     <input type="text" class="form-control" name="quantity">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class=" control-label col-sm-4" for="total"> Задайте обща сума с ДДС:</label>
-                <div class="col-sm-8">
+                <div class="col-sm-6">
                     <input type="text" class="form-control" name="total">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class=" control-label col-sm-4" for="tax"> Задайте ДДС в момента в %:</label>
-                <div class="col-sm-8">
+                <div class="col-sm-6">
                     <input type="text" class="form-control" name="tax">
                 </div>
             </div>
