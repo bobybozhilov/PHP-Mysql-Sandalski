@@ -37,15 +37,15 @@ function namebuilder($name, $val, $currency ){
 		 <div class="form-group col-sm-3" name="checkboxes">
 		 <br>
            <div class="checkbox">
-			  <label><input type="checkbox" name="ware" ><?php echo namebuilder($ware_name, $ware_val, $bgn);?></label>
+			  <label><input type="checkbox" name="cost[]" value="ware" ><?php echo namebuilder($ware_name, $ware_val, $bgn);?></label>
 			</div>
 			
 			<div class="checkbox">
-			  <label><input type="checkbox" name="accoutance"><?php echo namebuilder($accoutance_name, $accoutance_val, $bgn);?></label>
+			  <label><input type="checkbox" name="cost[]" value="accoutance"><?php echo namebuilder($accoutance_name, $accoutance_val, $bgn);?></label>
 			</div>
 			
 			<div class="checkbox ">
-			  <label><input type="checkbox" name="placement"><?php echo namebuilder($placement_name, $placement_val, $bgn);?></label>
+			  <label><input type="checkbox" name="cost[]" value="placement"><?php echo namebuilder($placement_name, $placement_val, $bgn);?></label>
 			</div>
 		</div>
             <div class="form-group">
