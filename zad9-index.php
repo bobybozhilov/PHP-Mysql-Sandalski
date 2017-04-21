@@ -7,7 +7,7 @@
 $ware_name = 'Склад';
 $accoutance_name = 'Счетоводство';
 $placement_name='Пласмент';
-
+//test
 $ware_val=100;
 $accoutance_val=200;
 $placement_val=250;
