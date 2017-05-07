@@ -3,7 +3,7 @@
 <div class="container">
 	<h2 class="text-center">Средно тегло</h2>
 
-	<form class="form-group" name="form1" action="zad10-response.php" method="post">
+	<form class="form-group" name="form1" action="zad11.3-response.php" method="post">
 
 		<div class="form-group">
 			<div class="form-inline">
