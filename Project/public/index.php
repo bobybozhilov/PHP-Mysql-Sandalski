@@ -1,5 +1,5 @@
 <?php
-	$location = '../web/home';
-	header('Location:' . $location);
-	die();
+    $location = '../web/home';
+    header('Location:' . $location);
+    die();
 ?>
