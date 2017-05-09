@@ -1,55 +1,80 @@
 <?php include '../includes/layouts/header.php';?>
 
+<?php
+    //Връзка с базата данни и инициализиране на променливите
+    include '../includes/database.php';
+   
+    // pagination variables
+    $self = $_SERVER['PHP_SELF'];
+    $page = !(empty($_GET['page'])) ? (int)$_GET['page'] : 1;
+    $resultsPerPage = 10 ;
+    $offset = (int)($page-1) * $resultsPerPage;
+    $sort = !empty($_GET["sort"]) ? $_GET['sort'] : NULL;
+    $type = !empty($_GET["type"]) ? $_GET['type'] : NULL;
+    
+    //pagination sorting type variables, 1 for each column
+    $customer_idNextType = ($sort == 1 and $type == "asc") ? "desc" : "asc";
+    $customer_nameNextType = ($sort == 2 and $type == "asc") ? "desc" : "asc";
+    $customer_type_idNextType = ($sort == 3 and $type == "asc") ? "desc" : "asc";
+    
+    //connect to DB to get number of rows for Pagination
+    $pdo = Database::connect();
+
+    $nRows = $pdo->query(
+        'SELECT count(*) FROM `' . 
+        'customers' . //table name
+        '`')->fetchColumn(); 
+    $lastPage = ceil(($nRows-1) / $resultsPerPage);
+?>
+
 <!-- Заглавие на страницата -->
 <title>Клиенти</title>
 
 <div class="page-header">
     <br>
-    <h2>Клиенти</h2>
+    <h3>Клиенти</h3>
 </div>
 
 <dl class="dl-horizontal">
 <?php
-    $page = !(empty($_GET['page'])) ? (int)$_GET['page'] : 0;
-    $results_per_page = 10;
-    $offset= (int)$page * $results_per_page;
-    
-    include '../includes/database.php';
-    
-    //Свързване с БД
-    $pdo = Database::connect();
-
-    $nRows = $pdo->query('SELECT count(*) FROM customers')->fetchColumn(); 
-    echo $nRows;
-    $lastPage=floor($nRows/$results_per_page);
-    echo ' '.$lastPage;
-    $sql_types = "SELECT * FROM `types`";
-    
-    foreach ($pdo->query($sql_types) as $row) {
+    // Покажи различните видове клиенти
+    $sqlTypes = "SELECT * FROM `types`";
+    foreach ($pdo->query($sqlTypes) as $row) {
         echo '<dt>' . 'Tип ' . $row['type_id'] . '</dt>';
         echo '<dd>' . $row['type_name'] . '</dd>';  
     }
 ?>
-
 </dl>
- 
-<!--/ Бутон за добавяне на нов клиент -->
-<p>
-    <a href="customers_add.php" class="btn btn-primary"> <span class="glyphicon glyphicon-plus"></span> Добави клиент</a>
-</p>
 
-<ul class="pagination">
-    <li class="previous"><a href="customers.php<?php echo (($page>1)&&($page<=$lastPage)) ? '?page='.($page-1) : ''; ?>">Предишна</a></li>
-    <li class="next"><a href="customers.php<?php echo (($page>=0)&&($page<=$lastPage)) ? '?page='.($page+1) : ''; ?>">Next</a></li>
-</ul>
+
+ 
+<!-- Бутон за добавяне на нов клиент -->
+
+<a href="customers_add.php" class="btn btn-success"> 
+    <span class="glyphicon glyphicon-plus"></span> Добави клиент
+</a>
+
+<?php include '../includes/pagination.php';?>
 
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
-            <!-- Добави имената на колоните -->
-            <th class="text-right">#</th>
-            <th>Име</th>
-            <th>Тип</th>
+            <!-- Добави имената на колоните +pagination sorting type variables-->
+            <th class="text-right">
+                <span>
+                    <a href="?sort=1&type=<?php echo $customer_idNextType; ?>" class="column-title">#</a>
+                </span>
+            </th>
+            <th>
+                <span>
+                    <a href="?sort=2&type=<?php echo $customer_nameNextType; ?>" class="column-title">Име</a>
+                </span>
+            </th>
+            <th>
+                <span>
+                    <a href="?sort=3&type=<?php echo $customer_type_idNextType; ?>" class="column-title">Тип</a>
+                </span>
+            </th>
             <th>Операции</th>
         </tr>
     </thead>
@@ -58,14 +83,41 @@
     <tbody>
   
 <?php
+   //Modify sort - # to table column name
+    switch($sort){
+        case 1:
+            $orderBy = "customer_id $type";
+            break;
+            
+        case 2:
+            $orderBy = "customer_name $type";
+            break;
+            
+        case 3:
+            $orderBy = "customer_type_id $type , customer_id ASC" ;
+            break;
+            
+        //Резултат различен от 1,2,3
+        default:
+            $orderBy = 'customer_id';
+    }
+    ?>
+    
+        <div class="container text-center">
+        Показване на записи <?= ($offset+1) . ' - ' . 
+            (($nRows <($offset +$resultsPerPage)) ? $nRows : $offset + $resultsPerPage);?>
+        , от общо <?=$nRows;?>
+        </div>
+<?php
+    
     //Избиране на записи от таблицата на клиентите
     $sql_customers = "SELECT 
         `customer_id`,
         `customer_name`,
         `customer_type_id`
         FROM `customers`
-        ORDER BY customer_id ASC
-        LIMIT $results_per_page
+        ORDER BY $orderBy
+        LIMIT $resultsPerPage
         OFFSET $offset
         ";
 
@@ -130,5 +182,6 @@
   
     </tbody>
 </table>
+<?php include '../includes/pagination.php';?>
 
 <?php include '../includes/layouts/footer.php'; ?>
