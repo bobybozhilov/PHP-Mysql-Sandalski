@@ -1,4 +1,5 @@
 <?php include '../includes/layouts/header.php';?>
+<?php require '../controllers/customersController.php' ?>
 
 <?php
     //Връзка с базата данни и инициализиране на променливите
@@ -20,10 +21,8 @@
     //connect to DB to get number of rows for Pagination
     $pdo = Database::connect();
 
-    $nRows = $pdo->query(
-        'SELECT count(*) FROM `' . 
-        'customers' . //table name
-        '`')->fetchColumn(); 
+    $nRows = $pdo->
+        query('SELECT count(*) FROM `' . 'customers' . '`')->fetchColumn(); 
     $lastPage = ceil(($nRows-1) / $resultsPerPage);
 ?>
 
@@ -36,21 +35,12 @@
 </div>
 
 <dl class="dl-horizontal">
-<?php
-    // Покажи различните видове клиенти
-    $sqlTypes = "SELECT * FROM `types`";
-    foreach ($pdo->query($sqlTypes) as $row) {
-        echo '<dt>' . 'Tип ' . $row['type_id'] . '</dt>';
-        echo '<dd>' . $row['type_name'] . '</dd>';  
-    }
-?>
+<?= CustomersController::displayTypeOfClients($pdo);?>
 </dl>
-
-
  
 <!-- Бутон за добавяне на нов клиент -->
 
-<a href="customers_add.php" class="btn btn-success"> 
+<a href="customers_addModal.php" class="btn btn-success"> 
     <span class="glyphicon glyphicon-plus"></span> Добави клиент
 </a>
 
@@ -83,24 +73,8 @@
     <tbody>
   
 <?php
-   //Modify sort - # to table column name
-    switch($sort){
-        case 1:
-            $orderBy = "customer_id $type";
-            break;
-            
-        case 2:
-            $orderBy = "customer_name $type";
-            break;
-            
-        case 3:
-            $orderBy = "customer_type_id $type , customer_id ASC" ;
-            break;
-            
-        //Резултат различен от 1,2,3
-        default:
-            $orderBy = 'customer_id';
-    }
+   $orderBy = CustomersController::orderBy($sort, $type);
+
     ?>
     
         <div class="container text-center">
@@ -108,80 +82,15 @@
             (($nRows <($offset +$resultsPerPage)) ? $nRows : $offset + $resultsPerPage);?>
         , от общо <?=$nRows;?>
         </div>
-<?php
-    
-    //Избиране на записи от таблицата на клиентите
-    $sql_customers = "SELECT 
-        `customer_id`,
-        `customer_name`,
-        `customer_type_id`
-        FROM `customers`
-        ORDER BY $orderBy
-        LIMIT $resultsPerPage
-        OFFSET $offset
-        ";
+<?=CustomersController::fillTable($pdo, $orderBy, $resultsPerPage, $offset); ?>
 
-    //Запълване на таблицата
-    foreach ($pdo->query($sql_customers) as $row) {
-       
-        //Колоните
-        echo '<tr class="';
-        
-        switch($row['customer_type_id']) {
-            case 1:
-                echo 'success';
-                break;
-                
-            case 2:
-                echo 'default';
-                break;
-                
-            case 3:
-                echo 'warning';
-                break;
-                
-            //Резултат различен от 1,2,3
-            default:
-            echo 'default';
-        }
-        echo '">';
-        
-        echo '<td class="col-sm-1 text-right">'. $row['customer_id'] . '</td>';
-        echo '<td class="col-sm-9">' . $row['customer_name'] . '</td>';
-        echo '<td class="col-sm-1">' . $row['customer_type_id'] . '</td>';
-        
-        //Колоната "Операции"
-        echo '<td class="col-sm-1 btn-group-justified">';
-            
-            //Бутон "Информация"   
-            echo '<a class="btn btn-xs btn-success"data-toggle="tooltip" data-placement="bottom"' . 
-                'title="Информация" ' .  
-                'href="customers_info.php?id=' . $row['customer_id'] . 
-                '"><span class="glyphicon glyphicon-eye-open"></span></a>';
-                         
-            //Бутон "Промени"   
-            echo '<a class="btn btn-xs btn-warning"data-toggle="tooltip" data-placement="bottom"' . 
-                'title="Промени"' . 
-                'href="customers_edit.php?id=' . $row['customer_id'] .
-                '"><span class="glyphicon glyphicon-pencil"></span></a>';
-                           
-            //Бутон "Изтрий"
-            echo '<a class="btn btn-xs btn-danger"data-toggle="tooltip" data-placement="bottom"' . 
-                'title="Изтрий"' . 
-                'href="customer_delete.php?id=' . $row['customer_id'] . 
-                '"><span class="glyphicon glyphicon-trash"></span></a>';
-            
-        echo '</td>';
-        echo '</tr>';
-    }
-    
-    //Прекъсване на връзката с Базата от Данни
-    Database::disconnect();
-
-?>
-  
     </tbody>
 </table>
+
+
 <?php include '../includes/pagination.php';?>
 
-<?php include '../includes/layouts/footer.php'; ?>
+<?php
+ Database::disconnect();
+ include '../includes/layouts/footer.php'; 
+ ?>
