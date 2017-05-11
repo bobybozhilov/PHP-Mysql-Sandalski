@@ -8,7 +8,7 @@
     // pagination variables
     $self = $_SERVER['PHP_SELF'];
     $page = !(empty($_GET['page'])) ? (int)$_GET['page'] : 1;
-    $resultsPerPage = 10 ;
+    $resultsPerPage = 20;
     $offset = (int)($page-1) * $resultsPerPage;
     $sort = !empty($_GET["sort"]) ? $_GET['sort'] : NULL;
     $type = !empty($_GET["type"]) ? $_GET['type'] : NULL;
@@ -21,8 +21,7 @@
     //connect to DB to get number of rows for Pagination
     $pdo = Database::connect();
 
-    $nRows = $pdo->
-        query('SELECT count(*) FROM `' . 'customers' . '`')->fetchColumn(); 
+    $nRows = CustomersController::getRowsCount($pdo);
     $lastPage = ceil(($nRows-1) / $resultsPerPage);
 ?>
 
@@ -40,11 +39,9 @@
  
 <!-- Бутон за добавяне на нов клиент -->
 
-<a href="customers_addModal.php" class="btn btn-success"> 
-    <span class="glyphicon glyphicon-plus"></span> Добави клиент
-</a>
+<?= CustomersController::addNew();?>
 
-<?php include '../includes/pagination.php';?>
+<?php if($nRows>$resultsPerPage) {include '../includes/pagination.php';}?>
 
 <table class="table table-bordered table-hover">
     <thead>
@@ -87,8 +84,7 @@
     </tbody>
 </table>
 
-
-<?php include '../includes/pagination.php';?>
+<?php if($nRows>$resultsPerPage) {include '../includes/pagination.php';}?>
 
 <?php
  Database::disconnect();

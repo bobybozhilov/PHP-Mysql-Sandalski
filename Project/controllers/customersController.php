@@ -33,8 +33,18 @@ class CustomersController
         return $orderBy;
     }
     
+    public static function getRowsCount(PDO $pdo) {
+        return $pdo->query('SELECT count(*) FROM `' . 'customers' . '`')->fetchColumn(); 
+    }
+    
+    public static function addNew() {
+        return '<a href="customers_add.php" class="btn btn-success"> 
+            <span class="glyphicon glyphicon-plus"></span> Добави клиент
+        </a>';
+    }
+    
     public static function fillTable (PDO $pdo, $orderBy, $resultsPerPage, $offset) {
-         $sql_customers = "SELECT 
+         $sql = "SELECT 
             `customer_id`,
             `customer_name`,
             `customer_type_id`
@@ -45,7 +55,7 @@ class CustomersController
             ";
 
         //Запълване на таблицата
-        foreach ($pdo->query($sql_customers) as $row) {
+        foreach ($pdo->query($sql) as $row) {
            
             //Колоните
             echo '<tr class="';
@@ -76,11 +86,11 @@ class CustomersController
             //Колоната "Операции"
             echo '<td class="col-sm-1 btn-group-justified">';
                 
-                //Бутон "Информация"   
-                echo '<a class="btn btn-xs btn-success"data-toggle="tooltip" data-placement="bottom"' . 
-                    'title="Информация" ' .  
-                    'href="customers_info.php?id=' . $row['customer_id'] . 
-                    '"><span class="glyphicon glyphicon-eye-open"></span></a>';
+//                //Бутон "Информация"   
+//                echo '<a class="btn btn-xs btn-success"data-toggle="tooltip" data-placement="bottom"' . 
+//                    'title="Информация" ' .  
+//                    'href="customers_info.php?id=' . $row['customer_id'] . 
+//                    '"><span class="glyphicon glyphicon-eye-open"></span></a>';
                              
                 //Бутон "Промени"   
                 echo '<a class="btn btn-xs btn-warning"data-toggle="tooltip" data-placement="bottom"' . 
@@ -91,7 +101,7 @@ class CustomersController
                 //Бутон "Изтрий"
                 echo '<a class="btn btn-xs btn-danger"data-toggle="tooltip" data-placement="bottom"' . 
                     'title="Изтрий"' . 
-                    'href="customer_delete.php?id=' . $row['customer_id'] . 
+                    'href="customers_delete.php?id=' . $row['customer_id'] . 
                     '"><span class="glyphicon glyphicon-trash"></span></a>';
                 
             echo '</td>';

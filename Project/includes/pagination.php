@@ -1,7 +1,3 @@
-<?php
-
-
-?>
 <!-- Навигация по страниците -->
 <div class="text-center">
     <ul class="pagination pagination-sm">
