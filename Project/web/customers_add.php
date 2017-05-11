@@ -9,17 +9,13 @@
             $customerNameErr = "Въведете име на клиент";
         } else {
             $customerName = test_input($_POST["customerName"]);
-            // check if name only contains letters and whitespace
-          //if (!preg_match("/^[a-zA-Z ]*$/",$name)) {
-         //       $customerNameErr = "Моля изпозлвайте само букви"; 
-          //  }
         }
      
         if ( !empty($_POST)) {
             // keep track validation errors
             
             // keep track post values
-            $customerName = $_POST['customerName'];
+            $customerName = test_ = $_POST['customerName'];
             $customerTypeId = $_POST['customerTypeId'];
              
             // validate input
@@ -32,6 +28,7 @@
              
             // insert data
             if ($valid) {
+                $customerName = test_input($customerName);
                 $pdo = Database::connect();
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 //select Table and Columns
