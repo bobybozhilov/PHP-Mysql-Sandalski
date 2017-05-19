@@ -12,11 +12,14 @@
     $offset = (int)($page-1) * $resultsPerPage;
     $sort = !empty($_GET["sort"]) ? $_GET['sort'] : NULL;
     $type = !empty($_GET["type"]) ? $_GET['type'] : NULL;
+    $search = !empty($_POST["search"]) ? $_POST["search"] : NULL;
+    
     
     //pagination sorting type variables, 1 for each column
     $customer_idNextType = ($sort == 1 and $type == "asc") ? "desc" : "asc";
     $customer_nameNextType = ($sort == 2 and $type == "asc") ? "desc" : "asc";
     $customer_type_idNextType = ($sort == 3 and $type == "asc") ? "desc" : "asc";
+    $totalNextType = ($sort == 4 and $type == "asc") ? "desc" : "asc";
     
     //connect to DB to get number of rows for Pagination
     $pdo = Database::connect();
@@ -39,7 +42,15 @@
  
 <!-- Бутон за добавяне на нов клиент -->
 
-<?= CustomersController::addNew();?>
+<?= CustomersController::addNew();?> 
+
+<p>Търсене по име на клиент.</p>
+  <form class="form-inline text-center" method="post" action="<?=$_SERVER['PHP_SELF'];?>">
+    <div class="form-group">
+      <input type="text" class="form-control" id="search" placeholder="Mинимална сума..." name="search">
+    </div>
+    <button type="submit" class="btn btn-default">Търси</button>
+  </form>
 
 <?php if($nRows>$resultsPerPage) {include '../includes/pagination.php';}?>
 
@@ -62,6 +73,11 @@
                     <a href="?sort=3&type=<?php echo $customer_type_idNextType; ?>" class="column-title">Тип</a>
                 </span>
             </th>
+            <th>
+                <span>
+                    <a href="?sort=4&type=<?php echo $totalNextType; ?>" class="column-title">Сума</a>
+                </span>
+            </th>
             <th>Операции</th>
         </tr>
     </thead>
@@ -79,7 +95,7 @@
             (($nRows <($offset +$resultsPerPage)) ? $nRows : $offset + $resultsPerPage);?>
         , от общо <?=$nRows;?>
         </div>
-<?=CustomersController::fillTable($pdo, $orderBy, $resultsPerPage, $offset); ?>
+<?=CustomersController::fillTable($pdo, $orderBy, $resultsPerPage, $offset, $search); ?>
 
     </tbody>
 </table>

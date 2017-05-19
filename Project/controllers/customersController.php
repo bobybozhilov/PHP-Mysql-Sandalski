@@ -23,7 +23,11 @@ class CustomersController
                     break;
                     
                 case 3:
-                    $orderBy = "customer_type_id $type , customer_id ASC" ;
+                    $orderBy = "customer_type_id $type , customer_id ASC";
+                    break;
+                   
+                case 4:
+                    $orderBy = "total";
                     break;
                     
                 //Резултат различен от 1,2,3
@@ -43,8 +47,12 @@ class CustomersController
         </a>';
     }
     
-    public static function fillTable (PDO $pdo, $orderBy, $resultsPerPage, $offset) {
-         $sql = "SELECT 
+    public static function fillTable (PDO $pdo, $orderBy, $resultsPerPage, $offset, $search) {
+        //$search = intval($search);
+        
+        $having = ($search == '') ? '' : " HAVING total >= $search ";
+//        echo 'WHERE = ' . $where;
+/*         $sql2 = "SELECT 
             `customer_id`,
             `customer_name`,
             `customer_type_id`
@@ -53,6 +61,23 @@ class CustomersController
             LIMIT $resultsPerPage
             OFFSET $offset
             ";
+*/     
+            
+        $sql = "SELECT 
+                customer_id, 
+                customer_name, 
+                customer_type_id, 
+                sum(item_price*ci_quantity) AS total 
+            FROM customers_items
+            LEFT JOIN items
+                ON ci_item_id=item_id 
+            RIGHT JOIN customers 
+                ON ci_customer_id = customer_id 
+            GROUP BY customer_id 
+            $having
+            ORDER BY $orderBy
+            LIMIT $resultsPerPage
+            OFFSET $offset";
 
         //Запълване на таблицата
         foreach ($pdo->query($sql) as $row) {
@@ -80,17 +105,18 @@ class CustomersController
             echo '">';
             
             echo '<td class="col-sm-1 text-right">'. $row['customer_id'] . '</td>';
-            echo '<td class="col-sm-9">' . $row['customer_name'] . '</td>';
-            echo '<td class="col-sm-1">' . $row['customer_type_id'] . '</td>';
+            echo '<td class="col-sm-8">' . $row['customer_name'] . '</td>';
+            echo '<td class="col-sm-1">' . $row['customer_type_id'] . '</td>';            
+            echo '<td class="col-sm-1">' . $row['total'] . '</td>';
             
             //Колоната "Операции"
             echo '<td class="col-sm-1 btn-group-justified">';
                 
-//                //Бутон "Информация"   
-//                echo '<a class="btn btn-xs btn-success"data-toggle="tooltip" data-placement="bottom"' . 
-//                    'title="Информация" ' .  
-//                    'href="customers_info.php?id=' . $row['customer_id'] . 
-//                    '"><span class="glyphicon glyphicon-eye-open"></span></a>';
+                //Бутон "Информация"   
+                echo '<a class="btn btn-xs btn-success"data-toggle="tooltip" data-placement="bottom"' . 
+                    'title="Информация" ' .  
+                    'href="customers_info.php?id=' . $row['customer_id'] . 
+                    '"><span class="glyphicon glyphicon-eye-open"></span></a>';
                              
                 //Бутон "Промени"   
                 echo '<a class="btn btn-xs btn-warning"data-toggle="tooltip" data-placement="bottom"' . 

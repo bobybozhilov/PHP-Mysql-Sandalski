@@ -60,7 +60,13 @@ class OrdersController
         </a>';
         }
     
-    public static function fillTable (PDO $pdo, $orderBy, $resultsPerPage, $offset) {
+    public static function fillTable (PDO $pdo, $orderBy, $resultsPerPage, $offset, $search) {
+        //$search = test_input($search);
+        
+        $where = ($search == '') ? '1' : " customer_name LIKE '$search%'";
+//        echo 'WHERE = ' . $where;
+            
+        
          $sql= "SELECT 
             ci_id, 
             CONCAT('(..', RIGHT(customer_id,3), ') ', customer_name,' (тип ' ,customer_type_id, ')') AS customer,
@@ -71,11 +77,12 @@ class OrdersController
             DATE_FORMAT(ci_date,'%d/%m/%Y') AS date
             FROM customers_items LEFT JOIN customers ON ci_customer_id = customer_id 
             LEFT JOIN items ON ci_item_id = item_id 
-            WHERE 1
+            WHERE $where
             ORDER BY $orderBy
             LIMIT $resultsPerPage
             OFFSET $offset
             ";
+//            echo $sql;
 
         //Запълване на таблицата
         foreach ($pdo->query($sql) as $row) {
@@ -115,6 +122,14 @@ class OrdersController
             echo '</td>';
             echo '</tr>';
         }
+        
+       
+    }
+    private static function test_input($data) {
+            $data = trim($data);
+            $data = stripslashes($data);
+            $data = htmlspecialchars($data);
+            return $data;
     }
 
     public static function calculateSums(PDO $pdo){
@@ -146,18 +161,6 @@ class OrdersController
     }
     
 }
+
+   
 ?>
-
-<?php /*SELECT DISTINCT ci_id, customer_name,customer_type_id , item_name, item_price, ci_quantity, ci_date FROM customers_items LEFT Join customers ON ci_customer_id = customer_id LEFT JOIN items ON ci_item_id = item_id WHERE 1
-
-
-SELECT 
-ci_id, 
-CONCAT('(..', RIGHT(customer_id,3), ') ', customer_name,' (тип ' ,customer_type_id, ')') AS customer,
-CONCAT('(..', RIGHT(item_id,3), ') ', item_name) AS item,
-item_price AS price,
-ci_quantity AS quantity,
-item_price*ci_quantity AS total,
-DATE_FORMAT(ci_date,'%d/%m/%Y') AS date
-  FROM customers_items LEFT Join customers ON ci_customer_id = customer_id LEFT JOIN items ON ci_item_id = item_id WHERE 1
-*/?>

@@ -12,6 +12,7 @@
     $offset = (int)($page-1) * $resultsPerPage;
     $sort = !empty($_GET["sort"]) ? $_GET['sort'] : NULL;
     $type = !empty($_GET["type"]) ? $_GET['type'] : NULL;
+    $search = !empty($_POST["search"]) ? $_POST["search"] : NULL;
     
     //pagination sorting type variables, 1 for each column
     $type1NextType = ($sort == 1 and $type == "asc") ? "desc" : "asc";
@@ -36,6 +37,17 @@
     <h3>Поръчки</h3>
 </div>
 
+
+  <p>Търсене по име на клиент.</p>
+  <form class="form-inline" method="post" action="<?=$_SERVER['PHP_SELF'];?>">
+    <div class="form-group">
+      <input type="text" class="form-control" id="search" placeholder="Въведи име" name="search">
+    </div>
+    <button type="submit" class="btn btn-default">Търси</button>
+  </form>
+
+  
+ <br>
  
 <!-- Бутон за добавяне на нов клиент -->
 
@@ -99,7 +111,7 @@
             (($nRows <($offset +$resultsPerPage)) ? $nRows : $offset + $resultsPerPage);?>
         , от общо <?=$nRows;?>
         </div>
-<?=ordersController::fillTable($pdo, $orderBy, $resultsPerPage, $offset); ?>
+<?=ordersController::fillTable($pdo, $orderBy, $resultsPerPage, $offset, $search); ?>
 
     </tbody>
 </table>
@@ -110,6 +122,13 @@
 <?php list ($paid, $remain) = ordersController::calculateSums($pdo); ?>
 
 <p>Събрана сума: <?=$paid;?> лв. , Оставаща сума: <?=$remain;?> лв.</p>
+
+ <form class="form-inline" method="post" action="<?=$_SERVER['PHP_SELF'];?>">
+    <div class="form-group">
+      <input type="text" class="form-control" id="search" placeholder="Въведи име" name="price">
+    </div>
+    <button type="submit" class="btn btn-default">Търси</button>
+  </form>
 
 <?php
  Database::disconnect();

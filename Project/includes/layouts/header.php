@@ -15,7 +15,7 @@
         
             <!-- Линкове към страниците -->
             <div class="navbar-header">
-                <a class="navbar-brand" href="home.php">Поръчки</a>
+                <a class="navbar-brand" href="orders.php">Поръчки</a>
             </div>
             
             <div id="navbar" class="navbar-collapse collapse">
