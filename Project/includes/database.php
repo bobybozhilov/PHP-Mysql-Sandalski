@@ -4,7 +4,7 @@ class Database
     private static $dbName = 'sandalski' ;
     private static $dbHost = 'localhost' ;
     private static $dbUsername = 'root';
-    private static $dbUserPassword = 'bobo';
+    private static $dbUserPassword = '';
 
     private static $cont  = null;
 
@@ -20,7 +20,7 @@ class Database
             try {
                 self::$cont =  new PDO( "mysql:host=".
                 self::$dbHost.";"."dbname=".
-                self::$dbName, 
+                self::$dbName.";charset=utf8", 
                 self::$dbUsername, 
                 self::$dbUserPassword); 
             } catch(PDOException $e) {
@@ -41,7 +41,7 @@ class Database
     {
         session_start();
         try {
-            $DB_con = new PDO("mysql:host=localhost;dbname=proekt","root","bobo");
+            $DB_con = new PDO("mysql:host=localhost;dbname=proekt","root","");
             $DB_con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
             echo $e->getMessage();
