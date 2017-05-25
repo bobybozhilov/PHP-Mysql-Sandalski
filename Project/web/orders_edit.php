@@ -1,50 +1,48 @@
 <?php
     require '../includes/database.php';
-    $itemNameError = $itemPriceError = $itemDescriptionError = '';
-    $itemName = $itemPrice = $itemDescription = '';
+    $ci_quantityError = '';
+    $ci_customer_id = $ci_item_id = $ci_quantity = $ci_comment = '';
     $id = null; 
     
     if (!empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
     if ( null==$id ) {
-        header("Location: items.php");
+        header("Location: orders.php");
     }
 
     if ( !empty($_POST)) {
         // keep track validation errors
         
         // keep track post values
-        $itemName = $_POST['itemName'];
-        $itemPrice = $_POST['itemPrice'];
-        $itemDescription = $_POST['itemDescription'];
+        $ci_customer_id = $_POST['ci_customer_id'];
+        $ci_item_id = $_POST['ci_item_id'];
+        $ci_quantity = $_POST['ci_quantity'];
+        $ci_comment = $_POST['ci_comment'];
          
         // validate input
         $valid = true;
-        if (empty($itemName)) {
-            $itemNameError = 'Моля въведете имена на клиента!';
-            $valid = false;
-        }
         
-        if (empty($itemPrice) or $itemPrice < 0) {
-            $itemPriceError = 'Моля въведете цена > 0!';
+        if (empty($ci_quantity) or $ci_quantity < 1) {
+            $itemPriceError = 'Моля въведете количество >= 1!';
             $valid = false;
         }
                      
         // update data
         if ($valid) {
-            $itemName=test_input($itemName);
-            $itemDescription=test_input($itemDescription);
+            $ci_quantity=test_input($ci_quantity);
+            $ci_comment=test_input($ci_comment);
             $pdo = Database::connect();
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "UPDATE items SET 
-                item_name = ?, 
-                item_price = ?, 
-                item_description = ? 
+            $sql = "UPDATE customers_items SET 
+                ci_customer_id = ?, 
+                ci_item_id = ?, 
+                ci_quantity = ?,
+                ci_comment = ? 
                 WHERE item_id= ?";
                 
             $query = $pdo->prepare($sql);
-            $query->execute(array($itemName, $itemPrice, $itemDescription, $id));
+            $query->execute(array($ci_customer_id, $ci_item_id, $ci_quantity, $ci_comment, $id));
             Database::disconnect();
             
             header('Location:items.php');
@@ -53,15 +51,16 @@
         $pdo = Database::connect();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = "SELECT *
-            FROM `items`
-            WHERE `item_id`= ?";
+            FROM `customers_items`
+            WHERE `ci_id`= ?";
             
         $query = $pdo->prepare($sql);
         $query->execute(array($id));
         $data = $query->fetch(PDO::FETCH_ASSOC);
-        $itemName = $data['item_name'];
-        $itemPrice = $data['item_price'];
-        $itemDescription = $data['item_description'];
+        $ci_customer_id = $data['ci_customer_id'];
+        $ci_item_id = $data['ci_item_id'];
+        $ci_quantity = $data['ci_quantity'];
+        $ci_comment = $data['ci_comment'];
         Database::disconnect();
     }
          
@@ -83,48 +82,103 @@
  
 <body>
 
-    <title>Промяна на артикул</title>
+    <title>Нова поръчка</title>
     
     <div class="container">
-        <h3>Промяна на артикул с № <?=$_GET['id'];?></h3>
+        <h2>Промяна на поръчка № <?=$id;?></h2>
 
-        <form class="form-horizontal" method="post" action="items_edit.php?id=<?=$id;?>"> 
-        
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="itemName">Име:<?=$itemNameError;?></label>
-                <div class="col-sm-7">
-                    <input type="text" class="form-control" placeholder="Въведете име на артикул" 
-                     name="itemName" value="<?=$itemName;?>">
-                </div>
-            </div>
-            
+        <form class="form-horizontal" form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> 
+
             <div class="form-group">
-                <label class="control-label col-sm-2" for="itemPrice">Цена:<?=$itemPriceError;?></label>
+                <label for="customer_id" class="col-sm-2 control-label">Клиент </label>
                 <div class="col-sm-7">
-                    <input type="number" min="0" step="any" class="form-control"
-                        placeholder="Въведете цената на артикула"
-                        name="itemPrice" value="<?=$itemPrice;?>">
-                </div>
+
+                <?php 
+                    try 
+                    {
+                        $sql = "SELECT customer_id, customer_name FROM customers";
+                        $projresult = $pdo->query($sql);
+                        $projresult->setFetchMode(PDO::FETCH_ASSOC);
+
+                        echo '<select name="customer_id"  id="customer_id" class="form-control" >';
+
+                        while ( $row = $projresult->fetch() ) 
+                        {
+                           
+                            echo '<option value="' . $row['customer_id'] . '">' .
+                                $row['customer_id'] . ' : ' . $row['customer_name'].
+                                '</option>';
+                        }
+
+                        echo '</select>';
+
+                        }   
+                    catch (PDOException $e) 
+                    {   
+                            die("Some problem getting data from database !!!" . $e->getMessage());
+                    }
+
+                ?>
+
+               </div>
             </div>
            
             <div class="form-group">
-                <label class="control-label col-sm-2" for="itemDescription">Описание:</label>
+                <label for="item_id" class="col-sm-2 control-label">Артикул </label>
+                <div class="col-sm-7">
+                <?php 
+                    try
+                    {
+                             $sql = "SELECT item_id, item_name, item_price FROM items";
+                             $projresult = $pdo->query($sql);
+                             $projresult->setFetchMode(PDO::FETCH_ASSOC);
+
+                             echo '<select name="item_id"  id="item_id" class="form-control" >';
+
+                         while ( $row = $projresult->fetch() ) 
+                         {
+                            echo '<option value="' . $row['item_id'] . '">' .
+                                $row['item_id'] . ' : ' . $row['item_name'] .' , цена: '. $row['item_price'] . ' лв.'.
+                                '</option>';
+                         }
+
+                         echo '</select>';
+                    }
+                    
+                    catch (PDOException $e)
+                    {   
+                        die("Some problem getting data from database !!!" . $e->getMessage());
+                    }
+
+                ?>
+
+               </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="quantity">Количество:</label>
+                <div class="col-sm-7">
+                    <input type="number" min="1" step="1" class="form-control"
+                           name="quantity" placeholder="Въведете Количество" value="<?=$ci_quantity;?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="comment">Коментар:</label>
                 <div class="col-sm-7">
                     <textarea class="form-control" rows="5"
-                        name="itemDescription"><?=$itemDescription;?>
+                        name="comment" placeholder="Коментар към поръчката" value="<?=$ci_comment;?>">
                     </textarea>
                 </div>
             </div>
 
-            <div class="form-actions">
+            <div class="form-group">
                 <div class="col-sm-6 col-sm-offset-2">
                     <button type="submit" class="btn btn-success" name="submit">Потвърди</button>
-                     <a class="btn btn-danger" href="items.php">Откажи</a>
+                     <a class="btn btn-danger" href="orders.php">Откажи</a>
                 </div>
             </div>
         </form>
     </div>
-                
+        <?php Database::disconnect();?>              
 <script src="../bootstrap/js/bootstrap.js"></script>
 </body>
 </html>

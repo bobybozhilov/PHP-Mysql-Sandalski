@@ -15,7 +15,6 @@
             $item_id = $_POST['item_id'];
             $quantity = $_POST['quantity'];
             $comment = $_POST['comment'];
-            echo $customer_id . $item_id . $quantity . $comment . '';
             // validate input
             $valid = true;
             
@@ -127,7 +126,7 @@
                          while ( $row = $projresult->fetch() ) 
                          {
                             echo '<option value="' . $row['item_id'] . '">' .
-                                $row['item_id'] . ' : ' . $row['item_name'] . $row['item_price'] .
+                                $row['item_id'] . ' : ' . $row['item_name'] .' , цена: '. $row['item_price'] . ' лв.'.
                                 '</option>';
                          }
 

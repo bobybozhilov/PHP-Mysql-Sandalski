@@ -44,8 +44,8 @@
 
 <?= CustomersController::addNew();?> 
 
-<p>Търсене по име на клиент.</p>
   <form class="form-inline text-center" method="post" action="<?=$_SERVER['PHP_SELF'];?>">
+  <p>Търсене по минимална сума.</p>
     <div class="form-group">
       <input type="text" class="form-control" id="search" placeholder="Mинимална сума..." name="search">
     </div>
